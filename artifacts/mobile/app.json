@@ -1,0 +1,63 @@
+{
+  "expo": {
+    "name": "Binary Calculator",
+    "slug": "mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "mobile",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/icon.png",
+        "backgroundColor": "#111014"
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/images/icon.png",
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/icon.png",
+          "imageWidth": 154,
+          "resizeMode": "contain",
+          "backgroundColor": "#111014"
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow Binary Calculator to photograph an IPv4 or IPv6 address for on-device scanning.",
+          "recordAudioAndroid": false
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Binary Calculator to select an image containing an IP address."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true,
+      "onDemandFilesystem": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e384661c-7fa5-4bde-9ee8-6e8aa60b28b3"
+      }
+    }
+  }
+}

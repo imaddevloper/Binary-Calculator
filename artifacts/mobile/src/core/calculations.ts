@@ -603,7 +603,7 @@ export function extractIPCandidates(text: string): IPCandidate[] {
     const start = match.index ?? 0;
     const end = start + raw.length;
     // Do not report the embedded IPv4 tail of an IPv4-mapped IPv6 address as a second candidate.
-    if (text[start - 1] === ':' || text[end] === ':') continue;
+    if (normalizedText[start - 1] === ':' || normalizedText[end] === ':') continue;
     const address = raw.replace(/^[^0-9]+|[^0-9]+$/g, '');
     if (validateIPv4(address).valid) candidates.set(address, { address, version: 'ipv4' });
   }

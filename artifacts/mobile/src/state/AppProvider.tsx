@@ -304,7 +304,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   return (
     <AppContext.Provider value={value}>
       <View style={[styles.root, { backgroundColor: colors.background }]} testID="app-root">
-        {children}
         {revealState && (
           <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.revealLayer]}>
             <Animated.View
@@ -321,6 +320,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
             />
           </View>
         )}
+        <View style={styles.contentLayer}>{children}</View>
       </View>
     </AppContext.Provider>
   );
@@ -333,6 +333,7 @@ export function useApp() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1 },
-  revealLayer: { zIndex: 9999 },
+  root: { flex: 1, position: 'relative' },
+  revealLayer: { zIndex: 0, elevation: 0 },
+  contentLayer: { flex: 1, zIndex: 1 },
 });

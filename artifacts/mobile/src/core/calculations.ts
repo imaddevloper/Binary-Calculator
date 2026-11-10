@@ -590,7 +590,14 @@ export type IPCandidate = { address: string; version: 'ipv4' | 'ipv6' };
 /** Extract only syntactically valid IP candidates from OCR text. Never auto-correct OCR digits. */
 export function extractIPCandidates(text: string): IPCandidate[] {
   const candidates = new Map<string, IPCandidate>();
-  const ipv4Matches = [...text.matchAll(/(?:\d{1,3}\.){3}\d{1,3}/g)];
+  // Handwritten dots are often recognized by OCR as commas or Arabic commas.
+  // Normalize only a clear four-octet sequence; never guess or rewrite digits.
+  const normalizedText = text.replace(
+    /(^|[^\d.])(\d{1,3})\s*[,،;]\s*(\d{1,3})\s*[,،;]\s*(\d{1,3})\s*[,،;]\s*(\d{1,3})(?=$|[^\d.])/g,
+    (_match, prefix: string, first: string, second: string, third: string, fourth: string) =>
+      `${prefix}${first}.${second}.${third}.${fourth}`,
+  );
+  const ipv4Matches = [...normalizedText.matchAll(/(?:\d{1,3}\.){3}\d{1,3}/g)];
   for (const match of ipv4Matches) {
     const raw = match[0];
     const start = match.index ?? 0;
@@ -602,7 +609,7 @@ export function extractIPCandidates(text: string): IPCandidate[] {
   }
 
   // Tokenize OCR output without stripping meaningful IPv6 colons (notably :: and ::1).
-  const tokens = text.split(/\s+/).map((token) => token.replace(/^[\[({<\"'`=]+|[\])}>\"',;!?`]+$/g, ''));
+  const tokens = normalizedText.split(/\s+/).map((token) => token.replace(/^[\[({<\"'`=]+|[\])}>\"',;!?`]+$/g, ''));
   for (const token of tokens) {
     const candidate = token.replace(/[.,;!?]+$/g, (suffix) => suffix.replace(/[.,;!?]/g, ''));
     if (!candidate.includes(':') || candidate.length > 45) continue;

@@ -9,7 +9,7 @@
 <p align="center">
   <img alt="Expo" src="https://img.shields.io/badge/Expo-58-000020?logo=expo&logoColor=white" />
   <img alt="React Native" src="https://img.shields.io/badge/React%20Native-0.88-20232A?logo=react&logoColor=61DAFB" />
-  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript- strict-3178C6?logo=typescript&logoColor=white" />
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-Strict-3178C6?logo=typescript&logoColor=white" />
   <img alt="Platform" src="https://img.shields.io/badge/Platform-Android-3DDC84?logo=android&logoColor=white" />
 </p>
 

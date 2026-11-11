@@ -63,7 +63,7 @@ export default function HomeScreen() {
             icon={colors.background === '#111014' ? 'sunny-outline' : 'moon-outline'}
             label={t('appearance')}
             testID="theme-toggle"
-            onPress={(event) => toggleTheme({ x: event.nativeEvent.pageX, y: event.nativeEvent.pageY })}
+            onPress={(event) => toggleTheme({ x: event.nativeEvent.pageX, y: Math.max(1, event.nativeEvent.pageY - insets.top) })}
           />
           <IconButton icon="settings-outline" label={t('settings')} onPress={() => router.push('/settings')} />
         </View>

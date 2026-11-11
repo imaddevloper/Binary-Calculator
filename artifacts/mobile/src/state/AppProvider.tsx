@@ -318,7 +318,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         {revealState && (
           <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.revealLayer]}>
             <Animated.View
-              style={{
+              style={[{
                 position: 'absolute',
                 left: revealState.x - 30,
                 top: revealState.y - 30,
@@ -326,9 +326,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
                 height: 60,
                 borderRadius: 30,
                 backgroundColor: palette[revealState.target].background,
-                transform: [{ scale: 1 }],
-              }}
-              style={revealAnimatedStyle}
+              }, revealAnimatedStyle]}
             />
           </View>
         )}

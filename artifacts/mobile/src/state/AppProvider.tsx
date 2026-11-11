@@ -226,7 +226,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         Math.max(1, (farthest * 1.15) / circleRadius),
         { duration: 760, easing: Easing.out(Easing.cubic) },
         (finished) => {
-          runOnJS(finishThemeTransition)(next, finished);
+          runOnJS(finishThemeTransition)(next, Boolean(finished));
         },
       );
     },

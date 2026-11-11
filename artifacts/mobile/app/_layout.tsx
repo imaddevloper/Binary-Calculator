@@ -64,29 +64,17 @@ function AppFrame() {
 function BrandedIntro() {
   const { colors, t, activeTheme } = useApp();
   const progress = useRef(new Animated.Value(0)).current;
-  const iconOpacity = useRef(new Animated.Value(0)).current;
-  const iconScale = useRef(new Animated.Value(0.88)).current;
-  const titleOpacity = useRef(new Animated.Value(0)).current;
+  const iconOpacity = useRef(new Animated.Value(1)).current;
+  const iconScale = useRef(new Animated.Value(1)).current;
+  const titleOpacity = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    const intro = setTimeout(() => {
-      Animated.parallel([
-        Animated.timing(iconOpacity, { toValue: 1, duration: 900, useNativeDriver: true }),
-        Animated.spring(iconScale, { toValue: 1, damping: 18, stiffness: 100, useNativeDriver: true }),
-      ]).start();
-    }, 500);
-    const title = setTimeout(() => {
-      Animated.timing(titleOpacity, { toValue: 1, duration: 700, useNativeDriver: true }).start();
-    }, 1500);
-    const bar = setTimeout(() => {
-      Animated.timing(progress, { toValue: 1, duration: 3000, useNativeDriver: false }).start();
-    }, 2500);
-    return () => {
-      clearTimeout(intro);
-      clearTimeout(title);
-      clearTimeout(bar);
-    };
-  }, [iconOpacity, iconScale, progress, titleOpacity]);
+    Animated.timing(progress, {
+      toValue: 1,
+      duration: 3000,
+      useNativeDriver: false,
+    }).start();
+  }, [progress]);
 
   const barWidth = progress.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] });
   return (

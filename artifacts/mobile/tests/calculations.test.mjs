@@ -129,6 +129,9 @@ test('extracts valid IPv4 and IPv6 candidates from OCR text without guessing cor
   assert.deepEqual(extractIPCandidates('Handwritten: 192،168،1،1'), [
     { address: '192.168.1.1', version: 'ipv4' },
   ]);
+  assert.deepEqual(extractIPCandidates('Handwritten: 192 . 168 . 1 . 1'), [
+    { address: '192.168.1.1', version: 'ipv4' },
+  ]);
   assert.deepEqual(extractIPCandidates('Local loopback ::1 and unspecified ::'), [
     { address: '::1', version: 'ipv6' },
     { address: '::', version: 'ipv6' },

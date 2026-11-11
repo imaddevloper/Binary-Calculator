@@ -593,7 +593,7 @@ export function extractIPCandidates(text: string): IPCandidate[] {
   // Handwritten dots are often recognized by OCR as commas or Arabic commas.
   // Normalize only a clear four-octet sequence; never guess or rewrite digits.
   const normalizedText = text.replace(
-    /(^|[^\d.])(\d{1,3})\s*[,،;]\s*(\d{1,3})\s*[,،;]\s*(\d{1,3})\s*[,،;]\s*(\d{1,3})(?=$|[^\d.])/g,
+    /(^|[^\d.])(\d{1,3})\s*[.,،;]\s*(\d{1,3})\s*[.,،;]\s*(\d{1,3})\s*[.,،;]\s*(\d{1,3})(?=$|[^\d.])/g,
     (_match, prefix: string, first: string, second: string, third: string, fourth: string) =>
       `${prefix}${first}.${second}.${third}.${fourth}`,
   );

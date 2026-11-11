@@ -108,7 +108,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const activeTheme =
     themeChoice === 'system' ? (systemScheme === 'dark' ? 'dark' : 'light') : themeChoice;
-  const colors = palette[activeTheme];
+  // During the circular reveal, make page canvases transparent so the animated
+  // circle changes only the screen background; cards and foreground controls stay above it.
+  const colors = revealState
+    ? ({ ...palette[activeTheme], background: 'transparent' } as typeof palette.light)
+    : palette[activeTheme];
 
   useEffect(() => {
     let mounted = true;
@@ -303,7 +307,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   return (
     <AppContext.Provider value={value}>
-      <View style={[styles.root, { backgroundColor: colors.background }]} testID="app-root">
+      <View style={[styles.root, { backgroundColor: palette[activeTheme].background }]} testID="app-root">
         {revealState && (
           <View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.revealLayer]}>
             <Animated.View

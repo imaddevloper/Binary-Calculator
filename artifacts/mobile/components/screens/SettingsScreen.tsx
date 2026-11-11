@@ -1,6 +1,7 @@
 import React from 'react';
 import { Alert, Linking, Pressable, StyleSheet, Switch, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Clipboard from 'expo-clipboard';
 import { ActionButton, AppText, Card, ChoiceRow, Page, SectionTitle } from '@/components/ui';
 import { ThemeChoice, useApp } from '@/src/state/AppProvider';
@@ -10,6 +11,7 @@ const INSTAGRAM_PROFILE = 'https://www.instagram.com/andercode1?srtk=ZDIyZjg2OXI
 
 export default function SettingsScreen() {
   const { t, language, setLanguage, themeChoice, setTheme, colors, isRTL, preferences, updatePreferences, clearHistory } = useApp();
+  const insets = useSafeAreaInsets();
 
   const openInstagram = async () => {
     try {
@@ -25,7 +27,7 @@ export default function SettingsScreen() {
   };
 
   const changeTheme = (next: ThemeChoice, event: import('react-native').GestureResponderEvent) => {
-    setTheme(next, { x: event.nativeEvent.pageX, y: event.nativeEvent.pageY });
+    setTheme(next, { x: event.nativeEvent.pageX, y: Math.max(1, event.nativeEvent.pageY - insets.top) });
   };
   const confirmClear = () => {
     Alert.alert(t('clearHistory'), t('clearHistoryConfirm'), [

@@ -11,13 +11,18 @@ import React, {
 } from 'react';
 import {
   AccessibilityInfo,
-  Animated,
-  Platform,
   StyleSheet,
   useColorScheme,
   useWindowDimensions,
   View,
 } from 'react-native';
+import Animated, {
+  Easing,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import palette from '@/constants/colors';
 import { ar, en, Language, TranslationKey } from '@/src/i18n/strings';
 import { Base } from '@/src/core/calculations';
@@ -98,7 +103,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [preferences, setPreferences] = useState<CalculatorPreferences>(DEFAULT_STATE.preferences);
   const [systemReducedMotion, setSystemReducedMotion] = useState(false);
   const [ready, setReady] = useState(false);
-  const reveal = useRef(new Animated.Value(0)).current;
+  const reveal = useSharedValue(0);
+  const revealAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: reveal.value }],
+  }));
   const themeTransitioning = useRef(false);
   const [revealState, setRevealState] = useState<{
     x: number;
@@ -189,6 +197,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     });
   }, [ready, language, themeChoice, history, completedLessons, challenge, preferences]);
 
+  const finishThemeTransition = useCallback((next: ThemeChoice, finished: boolean) => {
+    themeTransitioning.current = false;
+    if (finished) setThemeChoice(next);
+    setRevealState(null);
+    reveal.value = 0;
+  }, [reveal]);
+
   const setTheme = useCallback(
     (next: ThemeChoice, point?: { x: number; y: number }) => {
       if (themeTransitioning.current) return;
@@ -199,7 +214,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
       themeTransitioning.current = true;
       setRevealState({ ...point, target });
-      reveal.setValue(0);
+      reveal.value = 0;
       const circleRadius = 30;
       const farthest = Math.max(
         Math.hypot(point.x, point.y),
@@ -207,23 +222,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
         Math.hypot(point.x, height - point.y),
         Math.hypot(width - point.x, height - point.y),
       );
-      Animated.timing(reveal, {
-        toValue: Math.max(1, (farthest * 1.12) / circleRadius),
-        duration: 620,
-        useNativeDriver: Platform.OS !== 'web',
-      }).start(({ finished }) => {
-        themeTransitioning.current = false;
-        if (finished) {
-          setThemeChoice(next);
-          setRevealState(null);
-          reveal.setValue(0);
-        } else {
-          setRevealState(null);
-          reveal.setValue(0);
-        }
-      });
+      reveal.value = withTiming(
+        Math.max(1, (farthest * 1.15) / circleRadius),
+        { duration: 760, easing: Easing.out(Easing.cubic) },
+        (finished) => {
+          runOnJS(finishThemeTransition)(next, finished);
+        },
+      );
     },
-    [activeTheme, height, preferences.reducedMotion, reveal, systemReducedMotion, systemScheme, width],
+    [activeTheme, finishThemeTransition, height, preferences.reducedMotion, reveal, systemReducedMotion, systemScheme, width],
   );
 
   const toggleTheme = useCallback(
@@ -319,8 +326,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
                 height: 60,
                 borderRadius: 30,
                 backgroundColor: palette[revealState.target].background,
-                transform: [{ scale: reveal }],
+                transform: [{ scale: 1 }],
               }}
+              style={revealAnimatedStyle}
             />
           </View>
         )}

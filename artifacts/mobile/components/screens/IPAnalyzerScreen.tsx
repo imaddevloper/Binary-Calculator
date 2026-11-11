@@ -21,11 +21,54 @@ export default function IPAnalyzerScreen() {
   const [showSteps, setShowSteps] = useState(false);
 
   useEffect(() => {
-    if (typeof params.address === 'string' && params.address.trim()) {
-      setAddress(params.address);
-      setVersion(params.version === 'ipv6' ? 'ipv6' : params.version === 'ipv4' ? 'ipv4' : 'auto');
+    if (typeof params.address !== 'string' || !params.address.trim()) return;
+    const incoming = params.address.trim();
+    const incomingVersion: Version =
+      params.version === 'ipv6' ? 'ipv6' : params.version === 'ipv4' ? 'ipv4' : 'auto';
+    const detected: 'ipv4' | 'ipv6' = incoming.includes(':') ? 'ipv6' : 'ipv4';
+    const selected = incomingVersion === 'auto' ? detected : incomingVersion;
+    setAddress(incoming);
+    setVersion(incomingVersion);
+    setError('');
+    setShowSteps(false);
+    try {
+      if (selected === 'ipv4') {
+        const validation = validateIPv4(incoming);
+        if (!validation.valid) {
+          setAnalysis(null);
+          setAnalysisVersion(null);
+          setError(
+            validation.reason === 'range'
+              ? 'validationIPv4Range'
+              : validation.reason === 'leadingZero'
+                ? 'validationLeadingZero'
+                : 'validationIPv4Format',
+          );
+          return;
+        }
+        const value = analyzeIPv4(incoming);
+        setAnalysis(value);
+        setAnalysisVersion('ipv4');
+        addHistory({ kind: 'ipv4', input: value.address, result: value.hexadecimal });
+        return;
+      }
+      const validation = validateIPv6(incoming);
+      if (!validation.valid) {
+        setAnalysis(null);
+        setAnalysisVersion(null);
+        setError('validationIPv6Format');
+        return;
+      }
+      const value = analyzeIPv6(incoming);
+      setAnalysis(value);
+      setAnalysisVersion('ipv6');
+      addHistory({ kind: 'ipv6', input: value.address, result: value.hexadecimal });
+    } catch {
+      setAnalysis(null);
+      setAnalysisVersion(null);
+      setError(selected === 'ipv4' ? 'validationIPv4Format' : 'validationIPv6Format');
     }
-  }, [params.address, params.version]);
+  }, [params.address, params.version, addHistory]);
 
   const resetResult = () => { setAnalysis(null); setAnalysisVersion(null); setError(''); setShowSteps(false); };
   const selectVersion = (next: Version) => { setVersion(next); resetResult(); };
